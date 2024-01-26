@@ -1,6 +1,10 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { WorkoutContext } from "../context/NewContext";
 
-const WorkoutForm = ({ change, setChange })=>{
+const WorkoutForm = ()=>{
+
+    const { setGstate } = useContext(WorkoutContext);
+
     const [title, setTitle] = useState('');
     const [load, setLoad] = useState('');
     const [reps, setReps] = useState('');
@@ -24,7 +28,7 @@ const WorkoutForm = ({ change, setChange })=>{
             setErrors(null);
             setEmptyFields([]);
             console.log('New Workout Added', json);
-            setChange(!change);//updating global state (change) to re-render a DOM
+            setGstate('NEW WORKOUT ADDED: '+ json._id);//updating global state (change) to re-render a DOM
 
         } else {
             setErrors(json.ERROR);

@@ -1,9 +1,13 @@
 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { useContext } from 'react';
+import { WorkoutContext } from '../context/NewContext';
 
 
-const WorkoutDetails = ({workout, change, setChange})=>{
+const WorkoutDetails = ({workout})=>{
 
+
+    const { setGstate } = useContext(WorkoutContext);
 
 
     const handleClick = async ()=>{
@@ -15,7 +19,7 @@ const WorkoutDetails = ({workout, change, setChange})=>{
 
         if (response.ok) {
             console.log('Workout Deleted', json);
-            setChange(!change);//updating global state (change) to re-render a DOM
+            setGstate('WORKOUT DELETED: '+ json._id);//updating global state (change) to re-render a DOM
 
         } else {
            // setErrors(json.ERROR);
