@@ -1,40 +1,51 @@
 
-import { useEffect, useState } from "react";
-import WorkoutDetails from "../components/WorkoutDetails";
+
+import { useContext, useEffect, useState } from "react";
+import { WorkoutContext } from "../context/NewContext";
 import WorkoutForm from "../components/WorkoutForm";
+import WorkoutDetails from "../components/WorkoutDetails";
+import { useAuthContext } from "../hooks/useAuthContext";
+ 
+
 
 const Home = () => {
 
-    const [workouts, setWorkouts] = useState(null);
-    const [change, setChange] = useState(false);
+    const { user } = useAuthContext();
+    const { gstate } = useContext(WorkoutContext);
+    const [ workouts, setWorkouts] = useState(null);
+
 
 
     const fetchWorkouts = async()=>{
-        const response = await fetch("/api/workouts");
+        const response = await fetch("/api/workouts", {
+            headers: { 'Authorization': `Bearer ${ user.token }`}
+        }
+        );
         const json = await response.json();
 
         if(response.ok){
             setWorkouts(json);
-        }
+        } 
     }
 
-
     useEffect(()=>{
-        fetchWorkouts();
-    }, [change]);
+        if (user) {
+            fetchWorkouts();
+        }
+    }, [gstate, user]);
 
-
-
+    console.log(gstate);
+    
     return ( 
-    <div className="home">
+        <div className="home">
         <div className="workouts">
             {workouts && workouts.map(workout=>(
-                <WorkoutDetails key={workout._id} workout= {workout} setChange= {setChange} change= {change}/>
+                <WorkoutDetails key={workout._id} workout= {workout} />
             ))}
         </div>
-        { <WorkoutForm change = {change} setChange = {setChange}/> /*sending a global state (change) as a prop to re-render a DOM on Add a workout */}
+        { <WorkoutForm /> }
     </div>
      );
 }
- 
-export default Home;
+  
+export default Home;  

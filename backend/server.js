@@ -15,3 +15,4 @@ app.use(express.json());
 
 //routes
 app.use('/api/workouts', require('./routes/workouts'));
+app.use('/api/user', require('./routes/user'));
