@@ -2,40 +2,47 @@
 
 import { useContext, useState } from "react"
 import { WorkoutContext } from "../context/NewContext";
+import { useAuthContext } from "../hooks/useAuthContext";
 
-const WorkoutForm = ()=>{
+const WorkoutForm = ()=>{   
 
+    const { user } = useAuthContext();
     const { setGstate } = useContext(WorkoutContext);
 
     const [title, setTitle] = useState('');
     const [load, setLoad] = useState('');
     const [reps, setReps] = useState('');
     const [errors, setErrors] = useState(null);
-    const [emptyFields, setEmptyFields] = useState([]);
+    const [emptyFields, setEmptyFields] = useState([]); 
+
 
     const handleSubmit = async (e)=>{
         e.preventDefault();
         const workout = { title, load, reps};
 
+        if (!user) {
+            setErrors('U must be logged in');
+            return
+        }
+
         const response = await fetch('/api/workouts',{
             method: 'POST',
             body: JSON.stringify(workout),
-            headers: {'Content-Type': 'application/json'}
+            headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${ user.token }`}
         });
-        const json = await response.json();
+        const json = await response.json();  
         if (response.ok) {
             setTitle('');
-            setLoad('');
+            setLoad('');  
             setReps('');            
             setErrors(null);
             setEmptyFields([]);
-            console.log('New Workout Added', json);
             setGstate('NEW WORKOUT ADDED: '+ json._id);//updating global state (change) to re-render a DOM
 
         } else {
             setErrors(json.ERROR);
             setEmptyFields(json.emptyFields)
-            console.error('ERROR', json.ERROR);
+            console.error('ERROR', json.ERROR); 
         }
     }
 
